@@ -1,5 +1,5 @@
 sides = [[-1, 0], [0, -1], [1, 0], [0, 1]]
-with open("Day 1 - input", "r") as f:
+with open("Day 1 - input") as f:
     input_ = f.read()
     directions = input_.split(", ")
     facing = 0
