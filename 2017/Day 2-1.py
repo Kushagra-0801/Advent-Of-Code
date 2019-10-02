@@ -4,4 +4,4 @@ with open("Day 2 - input", "r") as file:
         row = [int(i) for i in line.split()]
         result = max(row) - min(row)
         checksum += result
-print(F"The checksum is {checksum}")
+print(f"The checksum is {checksum}")

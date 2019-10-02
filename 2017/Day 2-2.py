@@ -3,11 +3,10 @@ checksum = 0
 with open("Day 2 - input", "r") as file:
     for line in file:
         row = [int(i) for i in line.split('\t')]
-        combs = list(combinations(row,2))
-        for combination in combs:
+        for i,j in combinations(row,2):
             result = 0
-            first = combination[0]/combination[1]
-            second = combination[1]/combination[0]
+            first = i/j
+            second = j/i
             if  first.is_integer():
                 result = first
             elif second.is_integer():
@@ -16,4 +15,4 @@ with open("Day 2 - input", "r") as file:
             if result != 0:
                 break
 
-print("The checksum is {}".format(checksum))
+print(f"The checksum is {checksum}")
