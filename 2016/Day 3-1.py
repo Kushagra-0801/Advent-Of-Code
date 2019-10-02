@@ -8,4 +8,4 @@ def extractFile(file):
     return [toIntArray(line.strip().split()) for line in file]
 
 with open('Day 3-Input') as file:
-    print sum(1 for sides in extractFile(file) if validTriangle(sides))
+    print(sum(1 for sides in extractFile(file) if validTriangle(sides)))
