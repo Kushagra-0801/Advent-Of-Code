@@ -1,3 +1,7 @@
 .idea
 Pipfile*
 .vscode/
+
+**/__pycache__
+**/*.pyc
+**/inputs
