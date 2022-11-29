@@ -5,3 +5,5 @@ Pipfile*
 **/__pycache__
 **/*.pyc
 **/inputs
+config.json
+**/target
