@@ -62,10 +62,20 @@ def extract_puzzle_day(args: Namespace) -> Tuple[int, int]:
     return (args.year, args.day)
 
 
+# class Config:
+#     ...
+
+
 def read_config() -> Dict[str, Any]:
-    with open("config.json") as f:
-        conf = json.load(f)
-    return conf
+    default_conf = {"session": "", "solution": {"reset": False, "lang_generator": ""}}
+    return default_conf
+    # try:
+    #     with open("config.json") as f:
+    #         conf = json.load(f)
+    #         # conf = defaultdict()
+    # except FileNotFoundError:
+    #     conf = {}
+    # return conf
 
 
 def fill_from_environment(args: Namespace):
@@ -85,6 +95,7 @@ def main():
     download_input(year, day, args.session)
     webbrowser.open(f"https://adventofcode.com/{year}/day/{day}")
     add_examples(year, day)
+
 
 class RustTemplate:
     @staticmethod
@@ -158,8 +169,8 @@ def add_examples(year: int, day: int):
                 inp.append(input())
             except EOFError:
                 break
-        inp = '\n'.join(inp)
-        if inp == '':
+        inp = "\n".join(inp)
+        if inp == "":
             break
         print("Expected output:")
         out = []
@@ -168,10 +179,10 @@ def add_examples(year: int, day: int):
                 out.append(input())
             except EOFError:
                 break
-        out = '\n'.join(out)
-        with open(f'{year}/inputs/{day:02}.1.{cur_example}.inp', 'w+') as f:
+        out = "\n".join(out)
+        with open(f"{year}/inputs/{day:02}.1.{cur_example}.inp", "w+") as f:
             f.write(inp)
-        with open(f'{year}/inputs/{day:02}.1.{cur_example}.out', 'w+') as f:
+        with open(f"{year}/inputs/{day:02}.1.{cur_example}.out", "w+") as f:
             f.write(out)
         cur_example += 1
 
