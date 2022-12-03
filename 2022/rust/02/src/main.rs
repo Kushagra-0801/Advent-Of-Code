@@ -19,13 +19,23 @@ enum RockPaperScissors {
 }
 
 impl RockPaperScissors {
-    fn play_against(&self, other: &Self) -> GameResult {
+    fn play_against(self, other: Self) -> GameResult {
         use GameResult::*;
+        if self == other {
+            Draw
+        } else if self.weak_against() == other {
+            Lose
+        } else {
+            Win
+        }
+    }
+
+    fn weak_against(&self) -> Self {
         use RockPaperScissors::*;
-        match (self, other) {
-            (Paper, Paper) | (Scissors, Scissors) | (Rock, Rock) => Draw,
-            (Rock, Scissors) | (Paper, Rock) | (Scissors, Paper) => Win,
-            (Scissors, Rock) | (Paper, Scissors) | (Rock, Paper) => Lose,
+        match self {
+            Rock => Paper,
+            Paper => Scissors,
+            Scissors => Rock,
         }
     }
 }
@@ -35,9 +45,9 @@ impl TryFrom<char> for RockPaperScissors {
 
     fn try_from(value: char) -> Result<Self, Self::Error> {
         let play = match value {
-            'A' | 'X' => Self::Rock,
-            'B' | 'Y' => Self::Paper,
-            'C' | 'Z' => Self::Scissors,
+            'A' => Self::Rock,
+            'B' => Self::Paper,
+            'C' => Self::Scissors,
             _ => return Err(format!("Not a rock paper scissors move: {value:?}")),
         };
         Ok(play)
@@ -45,7 +55,7 @@ impl TryFrom<char> for RockPaperScissors {
 }
 
 type Int = u64;
-type Input = Vec<(RockPaperScissors, RockPaperScissors)>;
+type Input = Vec<(RockPaperScissors, char)>;
 
 fn parse_input(input: &str) -> AocResult<Input> {
     let mut moves = vec![];
@@ -62,18 +72,29 @@ fn parse_input(input: &str) -> AocResult<Input> {
             return Err(format!("Invalid response move: {response:?}").into());
         };
         let opponent = opponent.try_into()?;
-        let response = response.try_into()?;
         moves.push((opponent, response));
     }
     Ok(moves)
 }
 
-fn calculate_score_one_round((opp, res): &(RockPaperScissors, RockPaperScissors)) -> Int {
-    *res as Int + res.play_against(opp) as Int
-}
-
 fn part1(input: &Input) -> AocResult<Int> {
-    Ok(input.iter().map(calculate_score_one_round).sum())
+    fn parse_response(res: char) -> AocResult<RockPaperScissors> {
+        let res = match res {
+            'X' => RockPaperScissors::Rock,
+            'Y' => RockPaperScissors::Paper,
+            'Z' => RockPaperScissors::Scissors,
+            _ => return Err(format!("Not a rock paper scissors move: {res:?}").into()),
+        };
+        Ok(res)
+    }
+    input
+        .iter()
+        .map(|&(opp, res)| {
+            parse_response(res)
+                .map(|res| (opp, res))
+                .map(|(o, r)| r as Int + r.play_against(o) as Int)
+        })
+        .sum()
 }
 
 fn main() -> AocResult<()> {
