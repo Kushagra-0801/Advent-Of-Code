@@ -94,7 +94,6 @@ def main():
     lang_template_generator(year, day, args.reset)
     download_input(year, day, args.session)
     webbrowser.open(f"https://adventofcode.com/{year}/day/{day}")
-    add_examples(year, day)
 
 
 class RustTemplate:
@@ -117,6 +116,7 @@ class RustTemplate:
             else:
                 return
         check_call(["cargo", "new", f"{day:02}", "--name", f"aoc-{year}-{day:02}"], cwd=f"{year}/rust")
+        check_call(["cargo", "add", "indoc", "--dev"], cwd=f"{year}/rust/{day:02}")
 
 
 class PythonTemplate:
@@ -157,34 +157,6 @@ def download_input(year: int, day: int, session: str):
             print("No input found. Skipping")
         else:
             raise e
-
-
-def add_examples(year: int, day: int):
-    cur_example = 1
-    while True:
-        print("Expected input:")
-        inp = []
-        while True:
-            try:
-                inp.append(input())
-            except EOFError:
-                break
-        inp = "\n".join(inp)
-        if inp == "":
-            break
-        print("Expected output:")
-        out = []
-        while True:
-            try:
-                out.append(input())
-            except EOFError:
-                break
-        out = "\n".join(out)
-        with open(f"{year}/inputs/{day:02}.1.{cur_example}.inp", "w+") as f:
-            f.write(inp)
-        with open(f"{year}/inputs/{day:02}.1.{cur_example}.out", "w+") as f:
-            f.write(out)
-        cur_example += 1
 
 
 if __name__ == "__main__":
