@@ -23,18 +23,40 @@ fn parse_input(input: &str) -> AocResult<Vec<Vec<Int>>> {
     Ok(food_items)
 }
 
+fn top_three_most_calories(input: &[Vec<Int>]) -> AocResult<[Int; 3]> {
+    Ok(input.iter().map(|food| food.iter().sum::<Int>()).fold(
+        [0, 0, 0],
+        |mut top_three, cur_cal| {
+            if top_three[2] > cur_cal {
+            } else if top_three[1] > cur_cal {
+                top_three[2] = cur_cal;
+            } else if top_three[0] > cur_cal {
+                top_three[2] = top_three[1];
+                top_three[1] = cur_cal;
+            } else {
+                top_three[2] = top_three[1];
+                top_three[1] = top_three[0];
+                top_three[0] = cur_cal;
+            }
+            top_three
+        },
+    ))
+}
+
 fn part1(input: &[Vec<Int>]) -> AocResult<Int> {
-    input
-        .iter()
-        .map(|food| food.iter().sum::<Int>())
-        .max()
-        .ok_or_else(|| "No elves = no food items".into())
+    Ok(top_three_most_calories(input)?[0])
+}
+
+fn part2(input: &[Vec<Int>]) -> AocResult<Int> {
+    Ok(top_three_most_calories(input)?.into_iter().sum())
 }
 
 fn main() -> AocResult<()> {
     let input = parse_input(INPUT)?;
     let part1 = part1(&input)?;
+    let part2 = part2(&input)?;
     println!("Part 1: {part1}");
+    println!("Part 2: {part2}");
     Ok(())
 }
 
@@ -46,19 +68,21 @@ mod tests {
 
     struct TestCase {
         input: &'static str,
-        output: &'static str,
+        output1: &'static str,
+        output2: &'static str,
     }
 
-    impl From<(&'static str, &'static str)> for TestCase {
-        fn from((i, o): (&'static str, &'static str)) -> Self {
+    impl From<(&'static str, &'static str, &'static str)> for TestCase {
+        fn from((i, o1, o2): (&'static str, &'static str, &'static str)) -> Self {
             Self {
                 input: i,
-                output: o,
+                output1: o1,
+                output2: o2,
             }
         }
     }
 
-    static TEST_CASES_PART_1: [(&str, &str); 1] = [(
+    static TEST_CASES: [(&str, &str, &str); 1] = [(
         indoc! {"
             1000
             2000
@@ -77,14 +101,24 @@ mod tests {
             "
         },
         "24000",
+        "45000",
     )];
 
     #[test]
     fn part1_test() {
-        for case in TEST_CASES_PART_1 {
+        for case in TEST_CASES {
             let case = TestCase::from(case);
             let input = parse_input(case.input).unwrap();
-            assert_eq!(part1(&input).unwrap().to_string(), case.output);
+            assert_eq!(part1(&input).unwrap().to_string(), case.output1);
+        }
+    }
+
+    #[test]
+    fn part2_test() {
+        for case in TEST_CASES {
+            let case = TestCase::from(case);
+            let input = parse_input(case.input).unwrap();
+            assert_eq!(part2(&input).unwrap().to_string(), case.output2);
         }
     }
 }
