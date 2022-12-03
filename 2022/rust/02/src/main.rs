@@ -38,6 +38,15 @@ impl RockPaperScissors {
             Scissors => Rock,
         }
     }
+
+    fn response_for_result(self, result: GameResult) -> Self {
+        use GameResult::*;
+        match result {
+            Lose => self.weak_against().weak_against(),
+            Draw => self,
+            Win => self.weak_against(),
+        }
+    }
 }
 
 impl TryFrom<char> for RockPaperScissors {
@@ -97,12 +106,32 @@ fn part1(input: &Input) -> AocResult<Int> {
         .sum()
 }
 
+fn part2(input: &Input) -> AocResult<Int> {
+    fn parse_response(res: char) -> AocResult<GameResult> {
+        let res = match res {
+            'X' => GameResult::Lose,
+            'Y' => GameResult::Draw,
+            'Z' => GameResult::Win,
+            _ => return Err(format!("Not a valid game result: {res:?}").into()),
+        };
+        Ok(res)
+    }
+    input
+        .iter()
+        .map(|&(opp, res)| {
+            parse_response(res)
+                .map(|res| (opp, res))
+                .map(|(o, r)| r as Int + o.response_for_result(r) as Int)
+        })
+        .sum()
+}
+
 fn main() -> AocResult<()> {
     let input = parse_input(INPUT)?;
     let part1 = part1(&input)?;
-    // let part2 = part2(&input)?;
+    let part2 = part2(&input)?;
     println!("Part 1: {part1}");
-    // println!("Part 2: {part2}");
+    println!("Part 2: {part2}");
     Ok(())
 }
 
@@ -135,7 +164,7 @@ mod tests {
             C Z
         "},
         "15",
-        "",
+        "12",
     )];
 
     #[test]
@@ -147,12 +176,12 @@ mod tests {
         }
     }
 
-    // #[test]
-    // fn part2_test() {
-    //     for case in TEST_CASES {
-    //         let case = TestCase::from(case);
-    //         let input = parse_input(case.input).unwrap();
-    //         assert_eq!(part2(&input).unwrap().to_string(), case.output2);
-    //     }
-    // }
+    #[test]
+    fn part2_test() {
+        for case in TEST_CASES {
+            let case = TestCase::from(case);
+            let input = parse_input(case.input).unwrap();
+            assert_eq!(part2(&input).unwrap().to_string(), case.output2);
+        }
+    }
 }
