@@ -35,9 +35,46 @@ fn part1(input: &str) -> AocResult<Int> {
     Ok(total_priority)
 }
 
+fn part2(input: &str) -> AocResult<Int> {
+    let mut total_priority = 0;
+    let mut scratch1 = HashSet::with_capacity(52 / 3 + 1); // One partition will have a third of the items plus one badge
+    let mut scratch2 = HashSet::with_capacity(52 / 3 + 1); // One partition will have a third of the items plus one badge
+    let mut scratch3: HashSet<char> = HashSet::with_capacity(52 / 3 + 1); // One partition will have a third of the items plus one badge
+
+    let mut rucksacks = input.trim().lines();
+    while let Some(ruck1) = rucksacks.next() {
+        let Some(ruck2) = rucksacks
+            .next() else {
+                return Err("Insufficient rucksacks in the group".to_string().into());
+            };
+        let Some(ruck3) = rucksacks
+            .next() else {
+                return Err("Insufficient rucksacks in the group".to_string().into());
+            };
+        scratch1.clear();
+        scratch2.clear();
+        scratch3.clear();
+        ruck1.chars().for_each(|c| {
+            scratch1.insert(c);
+        });
+        ruck2.chars().for_each(|c| {
+            scratch2.insert(c);
+        });
+        scratch3.extend(scratch1.intersection(&scratch2));
+        let group_badge = ruck3
+            .chars()
+            .find(|c| scratch3.contains(c))
+            .ok_or_else(|| format!("No badge found in group: {ruck1:?} {ruck2:?} {ruck3:?}"))?;
+        total_priority += get_priority(group_badge)?;
+    }
+    Ok(total_priority)
+}
+
 fn main() -> AocResult<()> {
     let part1 = part1(INPUT)?;
+    let part2 = part2(INPUT)?;
     println!("Part 1: {part1}");
+    println!("Part 2: {part2}");
     Ok(())
 }
 
@@ -73,7 +110,7 @@ mod tests {
             CrZsJsPPZsGzwwsLwLmpwMDw
         "},
         "157",
-        "",
+        "70",
     )];
 
     #[test]
@@ -81,6 +118,14 @@ mod tests {
         for case in TEST_CASES {
             let case = TestCase::from(case);
             assert_eq!(part1(case.input).unwrap().to_string(), case.output1);
+        }
+    }
+
+    #[test]
+    fn part2_test() {
+        for case in TEST_CASES {
+            let case = TestCase::from(case);
+            assert_eq!(part2(case.input).unwrap().to_string(), case.output2);
         }
     }
 }
