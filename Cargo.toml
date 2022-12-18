@@ -1,3 +1,7 @@
 [workspace]
 members = ["**/rust/*"]
 exclude = ["**/target"]
+
+[workspace.dependencies]
+anyhow = "*"
+date_time = "2.2.0"
