@@ -3,5 +3,8 @@ members = ["**/rust/*"]
 exclude = ["**/target"]
 
 [workspace.dependencies]
-anyhow = "*"
+anyhow = "1.0.68"
 date_time = "2.2.0"
+indoc = "1.0.8"
+aoc-parse = "0.2.17"
+regex = "1.7.0"
