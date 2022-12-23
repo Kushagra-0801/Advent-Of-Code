@@ -12,7 +12,7 @@ impl From<[&'static str; 3]> for TestCase {
 }
 
 impl From<&[&'static str; 3]> for TestCase {
-    fn from(value: [&'static str; 3]) -> Self {
+    fn from(value: &[&'static str; 3]) -> Self {
         Self {
             input: value[0],
             out1: value[1],

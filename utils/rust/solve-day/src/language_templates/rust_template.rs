@@ -1,12 +1,12 @@
 use indoc::indoc;
-use regex::{Captures, Regex};
+use std::fmt::Write;
 use std::path::PathBuf;
 
 static MAIN_RS: &str = indoc!(
     r#"
     use anyhow::Result;
 
-    static INPUT: &str = include_str!(concat!(env!("CARGO_MANIFEST_DIR"), "/../../input/{day:02}"));
+    static INPUT: &str = include_str!(concat!(env!("CARGO_MANIFEST_DIR"), "/../../inputs/DAY"));
 
     #[allow(unused)]
     type Int = i64;
@@ -28,7 +28,7 @@ static MAIN_RS: &str = indoc!(
         let input = parse(INPUT)?;
         let part1 = part1(input.clone())?;
         println!("part1: {part1}");
-        let part2 = part2(input.clone())?;
+        let part2 = part2(input)?;
         println!("part2: {part2}");
         Ok(())
     }
@@ -51,7 +51,6 @@ static MAIN_RS: &str = indoc!(
                 let output = part1(input).unwrap();
                 assert_eq!(output, case.out1, "Failed for {case:?}");
             }
-            Ok(())
         }
 
         #[test]
@@ -62,7 +61,6 @@ static MAIN_RS: &str = indoc!(
                 let output = part2(input).unwrap();
                 assert_eq!(output, case.out2, "Failed for {case:?}");
             }
-            Ok(())
         }
     }
     "#
@@ -71,7 +69,7 @@ static MAIN_RS: &str = indoc!(
 static CARGO_TOML: &str = indoc!(
     r#"
     [package]
-    name = "aoc-{year}-{day:02}"
+    name = "aoc-YEAR-DAY"
     version = "0.1.0"
     edition = "2021"
 
@@ -92,12 +90,9 @@ pub struct RustTemplate;
 
 impl super::Template for RustTemplate {
     fn init_at_path(&self, mut path: PathBuf, day: u8, year: u16) -> std::io::Result<()> {
-        let placeholder_pattern = Regex::new(r#"[{\w+}]"#).unwrap();
-        let main_rs = placeholder_pattern.replace_all(MAIN_RS, |caps: &Captures| match &caps[1] {
-            "day" => format!("{day:02}"),
-            "year" => format!("{year}"),
-            _ => todo!(),
-        });
+        let main_rs = format_main_rs(day);
+        let cargo_toml = format_cargo_toml(day, year);
+
         path.push("src");
         std::fs::create_dir_all(&path)?;
         path.push("main.rs");
@@ -105,15 +100,25 @@ impl super::Template for RustTemplate {
         path.pop();
         path.pop();
         path.push("Cargo.toml");
-        std::fs::write(&path, CARGO_TOML)?;
+        std::fs::write(&path, cargo_toml)?;
         Ok(())
     }
 }
 
-// fn format_day(day: u8) -> [u8; 2] {
-//     if day < 10 {
-//         [b'0', day - b'0']
-//     } else {
-//         [(day / 10) - b'0', (day % 10) - b'0']
-//     }
-// }
+fn format_main_rs(day: u8) -> String {
+    let mut main_rs = String::with_capacity(MAIN_RS.len() - 1);
+    let placeholder_pos = MAIN_RS.find("DAY").unwrap();
+    write!(&mut main_rs, "{}", &MAIN_RS[..placeholder_pos]).unwrap();
+    write!(&mut main_rs, "{day:02}").unwrap();
+    write!(&mut main_rs, "{}", &MAIN_RS[placeholder_pos + 3..]).unwrap();
+    main_rs
+}
+
+fn format_cargo_toml(day: u8, year: u16) -> String {
+    let mut cargo_toml = String::with_capacity(CARGO_TOML.len() - 1);
+    let placeholder_pos = CARGO_TOML.find("YEAR-DAY").unwrap();
+    write!(&mut cargo_toml, "{}", &CARGO_TOML[..placeholder_pos]).unwrap();
+    write!(&mut cargo_toml, "{year}-{day:02}").unwrap();
+    write!(&mut cargo_toml, "{}", &CARGO_TOML[placeholder_pos + 8..]).unwrap();
+    cargo_toml
+}

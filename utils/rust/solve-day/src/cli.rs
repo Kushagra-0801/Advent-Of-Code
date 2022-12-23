@@ -10,7 +10,7 @@ pub struct DayArgs {
 }
 
 impl FromArgMatches for DayArgs {
-    fn from_arg_matches(matches: &clap::ArgMatches) -> Result<Self, clap::Error> {
+    fn from_arg_matches(matches: &clap::ArgMatches) -> Result<Self, Error> {
         let today = current_date();
         let day = matches.get_one("day").copied();
         let year = matches.get_one("year").copied();
@@ -28,7 +28,7 @@ impl FromArgMatches for DayArgs {
         Ok(Self { day, year })
     }
 
-    fn update_from_arg_matches(&mut self, matches: &clap::ArgMatches) -> Result<(), clap::Error> {
+    fn update_from_arg_matches(&mut self, matches: &clap::ArgMatches) -> Result<(), Error> {
         let today = current_date();
         let day = matches.get_one("day").copied().or(today.0);
         let year = matches.get_one::<u16>("year").copied().unwrap_or(today.1);
