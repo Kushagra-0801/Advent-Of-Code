@@ -10,3 +10,4 @@ clap = { version = "4.0.29", features = ["derive", "env"] }
 anyhow.workspace = true
 date_time.workspace = true
 indoc.workspace = true
+ureq = "2.5.0"

@@ -3,6 +3,24 @@ use std::fmt::Display;
 use clap::{error::ErrorKind, Args, Error, FromArgMatches, Parser, ValueEnum};
 use date_time::date_tuple::Date;
 
+/// Create a new solution template in the requested language and download the corresponding input
+#[derive(Debug, Parser)]
+#[command(author, version, about)]
+pub struct Cli {
+    #[command(flatten)]
+    pub dayarg: DayArgs,
+    /// AOC session cookie to download the solution input. Can be filled from the AOC_SESSION_KEY environment variable
+    #[arg(short, long = "session", env = "AOC_SESSION_KEY", default_value_t = String::new())]
+    #[arg(hide_default_value = true, hide_env = true)]
+    pub session_key: String,
+    /// Solution template to generate
+    #[arg(short = 'l', long = "lang", default_value_t = SolutionLang::Rust, value_enum)]
+    pub solution_lang: SolutionLang,
+    /// Don't try to revert if template initialization fails
+    #[arg(long, default_value_t = false)]
+    pub no_revert_on_fail: bool,
+}
+
 #[derive(Debug)]
 pub struct DayArgs {
     pub day: u8,
@@ -70,21 +88,6 @@ impl Args for DayArgs {
                 .value_parser(clap::value_parser!(u16).range(2015..)),
         )
     }
-}
-
-/// Create a new solution template in the requested language and download the corresponding input
-#[derive(Debug, Parser)]
-#[command(author, version, about)]
-pub struct Cli {
-    #[command(flatten)]
-    pub dayarg: DayArgs,
-    /// AOC session cookie to download the solution input. Can be filled from the AOC_SESSION_KEY environment variable
-    #[arg(short, long = "session", env = "AOC_SESSION_KEY", default_value_t = String::new())]
-    #[arg(hide_default_value = true, hide_env = true)]
-    pub session_key: String,
-    /// Solution template to generate
-    #[arg(short = 'l', long = "lang", default_value_t = SolutionLang::Rust, value_enum)]
-    pub solution_lang: SolutionLang,
 }
 
 fn current_date() -> (Option<u8>, u16) {

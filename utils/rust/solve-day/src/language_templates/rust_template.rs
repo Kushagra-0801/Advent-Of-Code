@@ -96,7 +96,7 @@ impl super::Template for RustTemplate {
         path.push("src");
         std::fs::create_dir_all(&path)?;
         path.push("main.rs");
-        std::fs::write(&path, &main_rs as &str)?;
+        std::fs::write(&path, main_rs)?;
         path.pop();
         path.pop();
         path.push("Cargo.toml");
