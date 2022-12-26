@@ -11,3 +11,4 @@ anyhow.workspace = true
 date_time.workspace = true
 indoc.workspace = true
 ureq = "2.5.0"
+dotenv = "0.15.0"
