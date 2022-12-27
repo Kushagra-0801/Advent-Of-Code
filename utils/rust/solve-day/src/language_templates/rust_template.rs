@@ -2,9 +2,9 @@ use indoc::indoc;
 use std::fmt::Write;
 use std::path::PathBuf;
 
-static MAIN_RS: &str = indoc!(
-    r#"
+static MAIN_RS: &str = indoc! {r#"
     use anyhow::Result;
+    use aoc_parse::{parser, prelude::*};
 
     static INPUT: &str = include_str!(concat!(env!("CARGO_MANIFEST_DIR"), "/../../inputs/DAY"));
 
@@ -13,7 +13,8 @@ static MAIN_RS: &str = indoc!(
     type Input = String;
 
     fn parse(input: &'static str) -> Result<Input> {
-        Ok(input.to_string())
+        let p = parser!(string(any_char+));
+        p.parse(input).map_err(Into::into)
     }
     
     fn part1(input: Input) -> Result<String> {
@@ -63,11 +64,9 @@ static MAIN_RS: &str = indoc!(
             }
         }
     }
-    "#
-);
+"#};
 
-static CARGO_TOML: &str = indoc!(
-    r#"
+static CARGO_TOML: &str = indoc! {r#"
     [package]
     name = "aoc-YEAR-DAY"
     version = "0.1.0"
@@ -83,8 +82,7 @@ static CARGO_TOML: &str = indoc!(
     regex.workspace = true
 
     aoc-utils = { path = "../../../utils/rust/aoc-utils" }
-    "#
-);
+"#};
 
 pub struct RustTemplate;
 
