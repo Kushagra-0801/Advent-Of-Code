@@ -86,8 +86,17 @@ fn part1((mut stacks, moves): Input) -> Result<String> {
         .collect())
 }
 
-fn part2(_input: Input) -> Result<String> {
-    todo!()
+fn part2((mut stacks, moves): Input) -> Result<String> {
+    for CraneMove { amt, from, to } in moves {
+        let remove_start = stacks.stacks[from].len() - amt as usize;
+        let (from_stack, to_stack) = stacks.get_stacks(from, to);
+        to_stack.extend(from_stack.drain(remove_start..));
+    }
+    Ok(stacks
+        .stacks
+        .iter()
+        .flat_map(|s| s.last().copied())
+        .collect())
 }
 
 fn main() -> Result<()> {
@@ -120,7 +129,7 @@ mod tests {
             move 1 from 1 to 2
         "},
         "CMZ",
-        "",
+        "MCD",
     ]];
 
     #[test]
