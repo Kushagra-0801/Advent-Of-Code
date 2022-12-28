@@ -13,7 +13,8 @@ fn parse(input: &'static str) -> Result<Input> {
 }
 
 fn part1(input: Input) -> Result<String> {
-    let mut chars = input.chars().zip(1..);
+    // pad the input because the search loop does not check the starting substring
+    let mut chars = std::iter::once((' ', 0)).chain(input.chars().zip(1..));
     let cur_window = [(); 4].map(|_| chars.next().map(|(c, _)| c));
     ensure!(cur_window.iter().all(Option::is_some));
     let mut cur_window = cur_window.map(Option::unwrap);
@@ -31,7 +32,22 @@ fn part1(input: Input) -> Result<String> {
 }
 
 fn part2(input: Input) -> Result<String> {
-    todo!()
+    // pad the input because the search loop does not check the starting substring
+    let mut chars = std::iter::once((' ', 0)).chain(input.chars().zip(1..));
+    let cur_window = [(); 14].map(|_| chars.next().map(|(c, _)| c));
+    ensure!(cur_window.iter().all(Option::is_some));
+    let mut cur_window = cur_window.map(Option::unwrap);
+    for (c, i) in chars {
+        cur_window[0] = c;
+        cur_window.rotate_left(1);
+        if cur_window
+            .iter()
+            .all(|c| cur_window.iter().filter(|&x| x == c).count() == 1)
+        {
+            return Ok(i.to_string());
+        }
+    }
+    bail!("Given datastream does not contain any start-of-message marker");
 }
 
 fn main() -> Result<()> {
@@ -50,11 +66,12 @@ mod tests {
     use super::*;
 
     const TEST_CASES: &[[&str; 3]] = &[
-        ["mjqjpqmgbljsphdztnvjfqwrcgsmlb", "7", ""],
-        ["bvwbjplbgvbhsrlpgdmjqwftvncz", "5", ""],
-        ["nppdvjthqldpwncqszvftbrmjlhg", "6", ""],
-        ["nznrnfrfntjfmvfwmzdfjlvtqnbhcprsg", "10", ""],
-        ["zcfzfwzzqfrljwzlrfnpqdbhtmscgvjw", "11", ""],
+        ["mjqjpqmgbljsphdztnvjfqwrcgsmlb", "7", "19"],
+        ["bvwbjplbgvbhsrlpgdmjqwftvncz", "5", "23"],
+        ["nppdvjthqldpwncqszvftbrmjlhg", "6", "23"],
+        ["nznrnfrfntjfmvfwmzdfjlvtqnbhcprsg", "10", "29"],
+        ["zcfzfwzzqfrljwzlrfnpqdbhtmscgvjw", "11", "26"],
+        ["zcfgfwzzqfrljwzlrfnpqdbhtmscgvjw", "4", "26"],
     ];
 
     #[test]
