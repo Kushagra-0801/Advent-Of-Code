@@ -151,7 +151,23 @@ fn part1(file_tree: Input) -> Result<String> {
 }
 
 fn part2(file_tree: Input) -> Result<String> {
-    todo!()
+    let min_needed = FileSystem::MIN_NEEDED - (FileSystem::MAX_TOTAL - file_tree.root.size);
+    fn search_min_size(dir_block: &FileTree, min_needed: Int) -> Option<&FileTree> {
+        let block = dir_block
+            .dirs
+            .iter()
+            .flat_map(|d| search_min_size(d, min_needed))
+            .min_by_key(|d: &&FileTree| d.size);
+        block.or_else(|| (dir_block.size >= min_needed).then_some(dir_block))
+    }
+    if min_needed <= 0 {
+        Ok(0.to_string())
+    } else {
+        let Some(deleted_size) = search_min_size(&file_tree.root, min_needed).map(|d| d.size) else {
+            bail!("Deleting the root directory must be enough to download the update");
+        };
+        Ok(deleted_size.to_string())
+    }
 }
 
 fn main() -> Result<()> {
@@ -198,7 +214,7 @@ mod tests {
             7214296 k
         "},
         "95437",
-        "",
+        "24933642",
     ]];
 
     #[test]
