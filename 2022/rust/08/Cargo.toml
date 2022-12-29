@@ -1,5 +1,5 @@
 [package]
-name = "aoc-utils"
+name = "aoc-2022-08"
 version = "0.1.0"
 edition = "2021"
 
@@ -7,3 +7,9 @@ edition = "2021"
 
 [dependencies]
 anyhow.workspace = true
+date_time.workspace = true
+indoc.workspace = true
+aoc-parse.workspace = true
+regex.workspace = true
+
+aoc-utils = { path = "../../../utils/rust/aoc-utils" }
