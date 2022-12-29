@@ -44,12 +44,12 @@ fn is_tree_visible(tree: Idx, grid: &TreeCover) -> bool {
 }
 
 fn part1(tree_cover: Input) -> Result<String> {
-    let mut visible_trees = 0;
-    for row in 0..(tree_cover.rows) {
-        for col in 0..(tree_cover.columns) {
-            visible_trees += is_tree_visible(Idx { row, col }, &tree_cover) as usize;
-        }
-    }
+    let visible_trees = (0..tree_cover.rows)
+        .flat_map(|r| (0..tree_cover.columns).map(move |c| (r, c)))
+        .map(|(row, col)| Idx { row, col })
+        .map(|tree| is_tree_visible(tree, &tree_cover))
+        .map(Into::<i64>::into)
+        .sum::<i64>();
     Ok(visible_trees.to_string())
 }
 
