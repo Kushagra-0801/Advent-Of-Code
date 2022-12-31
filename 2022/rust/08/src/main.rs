@@ -1,6 +1,9 @@
-use anyhow::Result;
+use anyhow::{bail, Result};
 use aoc_parse::{parser, prelude::*};
-use aoc_utils::grids::{Grid, Idx};
+use aoc_utils::{
+    grids::{Grid, Idx},
+    iterators::IteratorExt,
+};
 
 static INPUT: &str = include_str!(concat!(env!("CARGO_MANIFEST_DIR"), "/../../inputs/08"));
 
@@ -43,6 +46,29 @@ fn is_tree_visible(tree: Idx, grid: &TreeCover) -> bool {
             .any(|mut t| t.all(|x| grid[x] < tree_height))
 }
 
+fn calc_scenic_score(tree: Idx, tree_cover: &TreeCover) -> usize {
+    let tree_height = tree_cover[tree];
+    let left_visibles = (0..tree.col)
+        .rev()
+        .map(|col| tree_cover[tree.row][col])
+        .take_while_and_one(|&t| t < tree_height)
+        .count();
+    let right_visibles = (tree.col + 1..tree_cover.columns)
+        .map(|col| tree_cover[tree.row][col])
+        .take_while_and_one(|&t| t < tree_height)
+        .count();
+    let up_visibles = (0..tree.row)
+        .rev()
+        .map(|row| tree_cover[row][tree.col])
+        .take_while_and_one(|&t| t < tree_height)
+        .count();
+    let down_visibles = (tree.row + 1..tree_cover.rows)
+        .map(|row| tree_cover[row][tree.col])
+        .take_while_and_one(|&t| t < tree_height)
+        .count();
+    left_visibles * right_visibles * up_visibles * down_visibles
+}
+
 fn part1(tree_cover: Input) -> Result<String> {
     let visible_trees = (0..tree_cover.rows)
         .flat_map(|r| (0..tree_cover.columns).map(move |c| (r, c)))
@@ -53,8 +79,13 @@ fn part1(tree_cover: Input) -> Result<String> {
     Ok(visible_trees.to_string())
 }
 
-fn part2(input: Input) -> Result<String> {
-    todo!()
+fn part2(tree_cover: Input) -> Result<String> {
+    let Some(max_scenic_score) = (0..tree_cover.rows)
+        .flat_map(|r| (0..tree_cover.columns).map(move |c| (r, c)))
+        .map(|(row, col)| Idx { row, col })
+        .map(|tree| calc_scenic_score(tree, &tree_cover))
+        .max() else { bail!("Got an empty tree cover") };
+    Ok(max_scenic_score.to_string())
 }
 
 fn main() -> Result<()> {
@@ -83,7 +114,7 @@ mod tests {
             35390
         "},
         "21",
-        "",
+        "8",
     ]];
 
     #[test]
