@@ -1,4 +1,4 @@
-use std::ops::Add;
+use std::ops::{Add, Sub};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub struct Idx {
@@ -47,6 +47,28 @@ impl Add<IdxDelta> for Sidx {
         Self {
             row: self.row + rhs.row,
             col: self.col + rhs.col,
+        }
+    }
+}
+
+impl Sub for Idx {
+    type Output = IdxDelta;
+
+    fn sub(self, rhs: Self) -> Self::Output {
+        IdxDelta {
+            row: self.row as isize - rhs.row as isize,
+            col: self.col as isize - rhs.col as isize,
+        }
+    }
+}
+
+impl Sub for Sidx {
+    type Output = IdxDelta;
+
+    fn sub(self, rhs: Self) -> Self::Output {
+        IdxDelta {
+            row: self.row - rhs.row,
+            col: self.col - rhs.col,
         }
     }
 }

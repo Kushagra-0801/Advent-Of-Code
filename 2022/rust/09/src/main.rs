@@ -42,7 +42,7 @@ impl Move {
     }
 }
 
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone)]
 struct Rope {
     head: Sidx,
     tail: Sidx,
@@ -53,7 +53,8 @@ impl Add<IdxDelta> for Rope {
 
     fn add(self, rhs: IdxDelta) -> Self::Output {
         let head = self.head + rhs;
-        let tail = if head.row.abs_diff(self.tail.row) > 1 || head.col.abs_diff(self.tail.col) > 1 {
+        let diff = head - self.tail;
+        let tail = if diff.row.abs() > 1 || diff.col.abs() > 1 {
             self.head
         } else {
             self.tail
