@@ -1,9 +1,6 @@
 use anyhow::{bail, Result};
 use aoc_parse::{parser, prelude::*};
-use aoc_utils::{
-    grids::{Grid, Idx},
-    iterators::IteratorExt,
-};
+use aoc_utils::{grids::Grid, indices::Idx, iterators::IteratorExt};
 
 static INPUT: &str = include_str!(concat!(env!("CARGO_MANIFEST_DIR"), "/../../inputs/08"));
 
