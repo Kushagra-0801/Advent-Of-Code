@@ -1,6 +1,6 @@
 use std::ops::Add;
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub struct Idx {
     pub row: usize,
     pub col: usize,
@@ -12,7 +12,7 @@ pub struct IdxDelta {
     pub col: isize,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub struct Sidx {
     pub row: isize,
     pub col: isize,
